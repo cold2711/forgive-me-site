@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Forgive Me 💐</title>
+  <style>
+    :root{
+      --bg:#fff0f6; --accent:#ff4d6d; --muted:#8c8c8c;
+    }
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0;min-height:100vh;display:grid;place-items:center;background:linear-gradient(180deg,var(--bg),#ffe6f0);color:#222}
+    .card{width:min(760px,94vw);padding:36px;border-radius:22px;box-shadow:0 10px 40px rgba(255,77,109,0.2);background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,240,245,0.95));text-align:center;position:relative;overflow:hidden}
+    h1{font-size:clamp(28px,5vw,44px);margin:0 0 8px;color:var(--accent)}
+    p.lead{margin:0 0 20px;color:var(--muted);font-size:18px}
+    .question{font-weight:600;margin-bottom:18px;color:#ff4d6d}
+    .btns{display:flex;gap:18px;justify-content:center;align-items:center;position:relative;height:100px;}
+    button{padding:12px 22px;border-radius:999px;border:2px solid transparent;font-weight:700;cursor:pointer;user-select:none;font-size:16px}
+    #yes{background:linear-gradient(90deg,#ff8fab,#ff4d6d);color:#fff;box-shadow:0 6px 18px rgba(255,77,109,0.32);transition:transform .18s}
+    #yes:active{transform:scale(.98)}
+    #no{background:#fff;border:2px solid #ffc2d1;color:#ff4d6d;position:absolute;top:30px;left:30px;transition:transform 0.2s}
+
+    .reveal{margin-top:26px;min-height:300px;position:relative}
+    .stage{position:relative;min-height:320px;display:flex;flex-direction:column;justify-content:center;align-items:center;pointer-events:none}
+
+    #photo{width:240px;height:240px;border-radius:18px;object-fit:cover;box-shadow:0 10px 30px rgba(0,0,0,0.12);opacity:0;transform:translateY(16px) scale(.95);transition:all .6s cubic-bezier(.2,.9,.3,1);border:6px solid rgba(255,255,255,0.9)}
+
+    .message{font-size:28px;font-weight:700;color:#ff4d6d;margin-top:18px;opacity:0;transform:translateY(10px);transition:all .6s ease}
+
+    .kisses{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+    .kiss{position:absolute;font-size:28px;opacity:0;transform:translateY(20px) scale(.8);animation:floatUp 2.6s forwards ease-in}
+    @keyframes floatUp{0%{opacity:0;transform:translateY(30px) scale(.6)}30%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-120px) scale(.9)} }
+
+    .opened #photo{opacity:1;transform:translateY(0) scale(1)}
+    .opened .message{opacity:1;transform:translateY(0)}
+
+    @media (max-width:520px){
+      .card{padding:20px}
+      .btns{gap:12px;height:120px}
+      #photo{width:200px;height:200px}
+      .message{font-size:22px}
+    }
+  </style>
+</head>
+<body>
+  <main class="card" id="page">
+    <h1>Sorry 💌</h1>
+    <p class="lead">I messed up. Will you forgive me?</p>
+
+    <div class="question" id="question">Forgive me?</div>
+    <div class="btns" id="btns">
+      <button id="yes">Yes, of course 💖</button>
+      <button id="no">No 😒</button>
+    </div>
+
+    <div class="reveal">
+      <div class="stage" aria-hidden="true">
+        <img id="photo" alt="Our photo" src="pic\ourphoto.jpg">
+        <div class="message" id="loveMessage">Te Quiero Piccola ❤️</div>
+      </div>
+      <div class="kisses" id="kisses"></div>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      const noBtn = document.getElementById('no');
+      const yesBtn = document.getElementById('yes');
+      const container = document.getElementById('btns');
+      const page = document.getElementById('page');
+      const kisses = document.getElementById('kisses');
+      const question = document.getElementById('question');
+      const btns = document.getElementById('btns');
+
+      function moveNoButton(){
+        const rect = container.getBoundingClientRect();
+        const btnRect = noBtn.getBoundingClientRect();
+        const maxX = rect.width - btnRect.width;
+        const maxY = rect.height - btnRect.height;
+        const x = Math.random() * maxX;
+        const y = Math.random() * maxY;
+        noBtn.style.transform = `translate(${x}px, ${y}px)`;
+      }
+
+      noBtn.addEventListener('mouseenter', moveNoButton);
+      noBtn.addEventListener('mousemove', moveNoButton);
+      noBtn.addEventListener('click', function(e){ e.preventDefault(); moveNoButton(); });
+      noBtn.addEventListener('touchstart', function(e){ e.preventDefault(); moveNoButton(); }, {passive:false});
+
+      yesBtn.addEventListener('click', function(){
+        page.classList.add('opened');
+        question.style.display = 'none';
+        btns.style.display = 'none';
+        spawnKisses(15);
+      });
+
+      function spawnKisses(n){
+        for(let i=0;i<n;i++){
+          setTimeout(()=>{
+            const el = document.createElement('div');
+            el.className = 'kiss';
+            const pool = ['💋','😘','😍','💕','💖','❤️'];
+            el.textContent = pool[Math.floor(Math.random()*pool.length)];
+            el.style.left = Math.random()*100 + '%';
+            el.style.animationDelay = (Math.random()*0.4)+'s';
+            el.style.fontSize = (22 + Math.random()*34) + 'px';
+            kisses.appendChild(el);
+            setTimeout(()=>{ el.remove(); }, 3200);
+          }, i*140);
+        }
+      }
+
+      window.addEventListener('resize', ()=>{ noBtn.style.transform = 'translate(0,0)'; });
+    })();
+  </script>
+</body>
+</html>
